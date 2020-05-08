@@ -1,0 +1,12 @@
+﻿  Blocks.cpp
+  DisplayHelper.cpp
+  Multiplayer.cpp
+C:\Users\User\source\repos\Tetris\Tetris\Multiplayer.cpp(276,43): error C2664:  'DWORD GetModuleFileNameA(HMODULE,LPSTR,DWORD)': cannot convert argument 2 from 'wchar_t [260]' to 'LPSTR'
+C:\Users\User\source\repos\Tetris\Tetris\Multiplayer.cpp(276,27): message :  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+C:\Users\User\source\repos\Tetris\Tetris\Multiplayer.cpp(336,43): error C2664:  'DWORD GetModuleFileNameA(HMODULE,LPSTR,DWORD)': cannot convert argument 2 from 'wchar_t [260]' to 'LPSTR'
+C:\Users\User\source\repos\Tetris\Tetris\Multiplayer.cpp(336,27): message :  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+C:\Users\User\source\repos\Tetris\Tetris\Multiplayer.cpp(368,43): error C2664:  'DWORD GetModuleFileNameA(HMODULE,LPSTR,DWORD)': cannot convert argument 2 from 'wchar_t [260]' to 'LPSTR'
+  PlayerStats.cpp
+  Tetris.cpp
+  Generating Code...
+C:\Users\User\source\repos\Tetris\Tetris\Multiplayer.cpp(368,27): message :  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
