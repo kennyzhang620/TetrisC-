@@ -137,9 +137,12 @@ int MainMenu() {
 
 			RenderColor(94);
 			std::cout << "Controls: WASD\n(W to rotate Block, A and D to move left and right, and S to speed up descent of Block.\n\n";
+			RenderColor();
 			std::cout << "    [W] [E]\n";
 			std::cout << "[A] [S] [D] [F]\n\n";
-			std::cout << "For menus, E to go to option, F for filters (Leaderboards only), and Escape (ESC) to leave the current menu.\n";
+			RenderColor(94);
+			std::cout << "For menus, E to go to option, A and D to move cursor left and right,\n";
+			std::cout << "F for filters (Leaderboards only), and Escape (ESC) to leave the current menu.\n";
 			RenderColor();
 		}
 
@@ -156,7 +159,8 @@ int MainMenu() {
 			if (input == 'p' || input == 'P') {
 				if (RenderMode == 0) {
 					RenderColor(0, 0, 1);
-					std::cout << "\nCOLOUR RENDERING ENABLED.\n";
+					std::cout << "\nCOLOUR RENDERING ENABLED. PRESS P if nothing renders properly. Otherwise, press any key to continue.\n";
+					 _getch();
 					RenderMode = 1;
 				}
 				else {
@@ -221,27 +225,32 @@ int MainMenu() {
 int GameOver(int Score) {
 	PlaySound(NULL, NULL, 0);
 	int Selection = 0;
+	int prevSelection = -1;
 	char input = 'N';
 	while (input != 'e' && input != 'E') {
-		system("CLS");
-		std::cout << '\n';
-		std::cout << "||=======================================================||\n";
-		std::cout << "||                    __________                 SCORE: " << Score <<"||\n";
-		std::cout << "||                    | 88  88 |                         ||\n";
-		std::cout << "||                    | 88  88 |                         ||\n";
-		std::cout << "||           _________|________|________                 ||\n";
-		std::cout << "||           |        | ====== |        |                ||\n";
-		std::cout << "||           |        |-      -|        |                ||\n";
-		std::cout << "||           ----------------------------                ||\n";
-		RenderColor(91);
-		std::cout << "||                     GAME OVER!                        ||\n";
-		RenderColor();
-		std::cout << "||=======================================================||\n";
+		if (prevSelection != Selection) {
+			system("CLS");
+			std::cout << '\n';
+			std::cout << "||=======================================================||\n";
+			std::cout << "||                    __________                 SCORE: " << Score << "||\n";
+			std::cout << "||                    | 88  88 |                         ||\n";
+			std::cout << "||                    | 88  88 |                         ||\n";
+			std::cout << "||           _________|________|________                 ||\n";
+			std::cout << "||           |        | ====== |        |                ||\n";
+			std::cout << "||           |        |-      -|        |                ||\n";
+			std::cout << "||           ----------------------------                ||\n";
+			RenderColor(91);
+			std::cout << "||                     GAME OVER!                        ||\n";
+			RenderColor();
+			std::cout << "||=======================================================||\n";
 
-		if (Selection == 0)
-			std::cout << "         <TRY AGAIN!>             EXIT TO MENU              ";
-		else
-			std::cout << "          TRY AGAIN!             <EXIT TO MENU>             ";
+			if (Selection == 0)
+				std::cout << "         <TRY AGAIN!>             EXIT TO MENU              ";
+			else
+				std::cout << "          TRY AGAIN!             <EXIT TO MENU>             ";
+
+			prevSelection = Selection;
+		}
 
 		if (_kbhit()) {
 			input = _getch();

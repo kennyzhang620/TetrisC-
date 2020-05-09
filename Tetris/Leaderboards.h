@@ -7,6 +7,7 @@
 #include <conio.h>
 #include <fstream>
 #include <iterator>
+#include "DIsplay.h"
 
 class Leaderboards
 {
@@ -46,14 +47,20 @@ public:
 			std::cout << "User with UID: " << UID << " not found.\n";
 		}
 		else {
+			RenderColor(94);
 			std::cout << "||=======================================================||\n";
 			std::cout << "                       PLAYER FOUND!						 \n";
+			RenderColor();
+			RenderColor(93);
 			std::cout << "||=======================================================||\n";
+			RenderColor();
 			std::cout << "||Player: " << data->second.GetUserNameT() << "\n";
 			std::cout << "||Score: " << data->second.GetHighScore() << "\n";
 			std::cout << "||UID: " << data->second.GetUID() << "\n";
 			std::cout << "||Wins/Losses: " << data->second.getKD()[0] << "/" << data->second.getKD()[1] << '\n';
+			RenderColor(93);
 			std::cout << "||=======================================================||\n\n";
+			RenderColor();
 
 
 		}
@@ -67,40 +74,57 @@ public:
 
 		int offset = 0;
 		int cursor = 0;
+		int prevCursor = -1;
 
 		Tree* result = LeaderboardNames.SearchBinTree(searchdata, &storeddata);
 
+		if (result != NULL) {
+			storeddata.push_back(result->data);
+		}
+
 		char inputD = 'N';
 		while (inputD != 27) {
-			system("CLS");
-			std::cout << "||======================RESULTS==========================||\n";
-			std::cout << "||Name:            |UID:             |Score:             ||\n";
-			std::cout << "||-------------------------------------------------------||\n";
+			if (prevCursor != cursor) {
+				system("CLS");
+				RenderColor(94);
+				std::cout << "||======================RESULTS==========================||\n";
+				RenderColor();
+				std::cout << "||Name:            |UID:             |Score:             ||\n";
+				std::cout << "||-------------------------------------------------------||\n";
 
-			int sizeD = storeddata.size();
+				int sizeD = storeddata.size();
 
-			for (int i = 0; i < 9; i++) {
-				if (i == cursor)
-					std::cout << ">>";
-				else
-					std::cout << "||";
+				for (int i = 0; i < 9; i++) {
+					if (i == cursor)
+						std::cout << ">>";
+					else
+						std::cout << "||";
 
-				int point = i + offset;
-				if (point < sizeD)
-					std::cout << storeddata[point].GetUserNameT() << "  |  " << storeddata[point].GetUID() << "  |  " << storeddata[point].GetHighScore() << '\n';
-				else
-					std::cout << "\n";
-			}
-			std::cout << "||=======================================================||\n";
-
-			int pointerD = (cursor + offset);
-			if (pointerD < storeddata.size()) {
+					int point = i + offset;
+					if (point < sizeD)
+						std::cout << storeddata[point].GetUserNameT() << "  |  " << storeddata[point].GetUID() << "  |  " << storeddata[point].GetHighScore() << '\n';
+					else
+						std::cout << "\n";
+				}
+				RenderColor(94);
 				std::cout << "||=======================================================||\n";
-				std::cout << "||Player: " << storeddata[pointerD].GetUserNameT() << "\n";
-				std::cout << "||Score: " << storeddata[pointerD].GetHighScore() << "\n";
-				std::cout << "||UID: " << storeddata[pointerD].GetUID() << "\n";
-				std::cout << "||Wins/Losses: " << storeddata[pointerD].getKD()[0] << "/" << storeddata[pointerD].getKD()[1] << '\n';
-				std::cout << "||=======================================================||\n";
+				RenderColor();
+
+				unsigned int pointerD = (cursor + offset);
+				if (pointerD < storeddata.size()) {
+					RenderColor(93);
+					std::cout << "||=======================================================||\n";
+					RenderColor();
+					std::cout << "||Player: " << storeddata[pointerD].GetUserNameT() << "\n";
+					std::cout << "||Score: " << storeddata[pointerD].GetHighScore() << "\n";
+					std::cout << "||UID: " << storeddata[pointerD].GetUID() << "\n";
+					std::cout << "||Wins/Losses: " << storeddata[pointerD].getKD()[0] << "/" << storeddata[pointerD].getKD()[1] << '\n';
+					RenderColor(93);
+					std::cout << "||=======================================================||\n";
+					RenderColor();
+				}
+
+				prevCursor = cursor;
 			}
 
 			if (_kbhit()) {
@@ -111,15 +135,15 @@ public:
 					if (cursor > 0)
 						cursor--;
 					else
-						if (offset > 0)
+						if (offset > 0) {
 							offset--;
-
+						}
 				if (inputD == 's' || inputD == 'S')
 					if (cursor < 8)
 						cursor++;
 					else
-						if (offset < 1)
-							offset++;
+						offset++;
+				prevCursor = -1;
 			}
 		}
 	}
@@ -158,7 +182,7 @@ public:
 			
 			fread(temp, sizeof(PlayerStats), filesize, loadbin);
 
-			for (int i = 0; i < filesize; i++) {
+			for (unsigned int i = 0; i < filesize; i++) {
 				LeaderboardScores.push_back(temp[i]);
 
 				// Populate the hash table.

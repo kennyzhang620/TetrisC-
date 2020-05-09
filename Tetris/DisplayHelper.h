@@ -255,8 +255,7 @@ public:
 				TotalTimeElapsed++;
 				refreshDisplay();
 			}
-			else if (SignalStrength < 0) {
-				system("CLS");
+			else if (SignalStrength < 0 && SignalStrength != -5) {
 				std::cout << '\n';
 				std::cout << "||=======================================================||\n";
 				std::cout << "||                    __________         BY ZHANGCODES620||\n";
@@ -269,6 +268,7 @@ public:
 				std::cout << "||                    GAME PAUSED                        ||\n";
 				std::cout << "||                   PRESS E TO EXIT                     ||\n";
 				std::cout << "||=======================================================||\n";
+				SignalStrength = -5;
 			}
 
 			if (currY >= 9 + 10 || currY == -2) {
@@ -309,12 +309,16 @@ public:
 				prevX = currX;
 				prevRot = Rotation;
 
-				if (input == 27) {
+				if (input == 27 && SignalStrength <= 0) {
 					system("CLS");
-					if (GameState == 5)
+					if (GameState == 5) {
 						GameState = 0;
-					else
+					}
+					else {
 						GameState = 5;
+					}
+
+					SignalStrength = -1;
 				}
 
 				if ((input == 'e' || input == 'E') && GameState == 5) {

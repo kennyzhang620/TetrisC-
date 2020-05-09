@@ -14,7 +14,6 @@ void SearchLB(Leaderboards collection) {
 	std::getline(std::cin, search);
 	collection.Search(search.c_str());
 
-	_getch();
 }
 
 void LocateUIDLB(Leaderboards collection) {
@@ -26,7 +25,7 @@ void LocateUIDLB(Leaderboards collection) {
 	std::getline(std::cin, uidStr);
 
 	bool isDig = true;
-	for (int i = 0; i < uidStr.size(); i++) {
+	for (unsigned int i = 0; i < uidStr.size(); i++) {
 		if (!isdigit(uidStr[i]))
 			isDig = false;
 
@@ -44,96 +43,114 @@ void RenderLeaderBoards(Leaderboards collection) {
 	int offset = 0;
 	int Selection = 0;
 	int cursor = 0;
+	int prevCursor = -1;
 	int displaymode = 0;
 	
 	int NOTrender = -1;
 	char input = 'N';
 	
 	while (input != 27) {
-		system("CLS");
-		std::cout << "||=====================LEADERBOARDS======================||\n";
-		std::cout << "||Name:            |UID:             |Score:             ||\n";
-		std::cout << "||-------------------------------------------------------||\n";
-		int size = collection.LeaderboardScores.size() - 1;
-		NOTrender = -1;
+		if (prevCursor != cursor) {
+			system("CLS");
+			RenderColor(94);
+			std::cout << "||=====================LEADERBOARDS======================||\n";
+			RenderColor();
+			std::cout << "||Name:            |UID:             |Score:             ||\n";
+			std::cout << "||-------------------------------------------------------||\n";
+			int size = collection.LeaderboardScores.size() - 1;
+			NOTrender = -1;
 
-		for (int i = 0; i < 9; i++) {
-			if (i == cursor)
-				std::cout << ">>";
-			else
-				std::cout << "||";
+			for (int i = 0; i < 9; i++) {
+				if (i == cursor)
+					std::cout << ">>";
+				else
+					std::cout << "||";
 
-			int index = i + offset;
+				int index = i + offset;
 
-			if (index < collection.LeaderboardScores.size()) {
-				if (collection.LeaderboardScores[size - index].Connector == -1 && displaymode == 2)
-					std::cout << collection.LeaderboardScores[size - index].GetUserNameT() << "  |  " << collection.LeaderboardScores[size - index].GetUID() << "  |  " << collection.LeaderboardScores[size - index].GetHighScore() << '\n';
+				if (index < collection.LeaderboardScores.size()) {
+					if (collection.LeaderboardScores[size - index].Connector == -1 && displaymode == 2)
+						std::cout << collection.LeaderboardScores[size - index].GetUserNameT() << "  |  " << collection.LeaderboardScores[size - index].GetUID() << "  |  " << collection.LeaderboardScores[size - index].GetHighScore() << '\n';
 
-				else if (collection.LeaderboardScores[size - index].Connector >= 0 && displaymode == 1)
-					std::cout << collection.LeaderboardScores[size - index].GetUserNameT() << "  |  " << collection.LeaderboardScores[size - index].GetUID() << "  |  " << collection.LeaderboardScores[size - index].GetHighScore() << '\n';
+					else if (collection.LeaderboardScores[size - index].Connector >= 0 && displaymode == 1)
+						std::cout << collection.LeaderboardScores[size - index].GetUserNameT() << "  |  " << collection.LeaderboardScores[size - index].GetUID() << "  |  " << collection.LeaderboardScores[size - index].GetHighScore() << '\n';
 
-				else if (displaymode == 0)
-					std::cout << collection.LeaderboardScores[size - index].GetUserNameT() << "  |  " << collection.LeaderboardScores[size - index].GetUID() << "  |  " << collection.LeaderboardScores[size - index].GetHighScore() << '\n';
+					else if (displaymode == 0)
+						std::cout << collection.LeaderboardScores[size - index].GetUserNameT() << "  |  " << collection.LeaderboardScores[size - index].GetUID() << "  |  " << collection.LeaderboardScores[size - index].GetHighScore() << '\n';
 
-				else {
+					else {
+						std::cout << "\n";
+						if (i == cursor)
+							NOTrender = cursor;
+					}
+				}
+				else
 					std::cout << "\n";
-					if (i == cursor)
-						NOTrender = cursor;
+			}
+			RenderColor(94);
+			std::cout << "||=======================================================||\n\n";
+			RenderColor();
+
+			int pointer = (cursor + offset);
+			if (pointer < collection.LeaderboardScores.size() && cursor != NOTrender) {
+				RenderColor(93);
+				std::cout << "||=======================================================||\n";
+				RenderColor();
+				std::cout << "||Player: " << collection.LeaderboardScores[size - (cursor + offset)].GetUserNameT() << "\n";
+				std::cout << "||Score: " << collection.LeaderboardScores[size - (cursor + offset)].GetHighScore() << "\n";
+				std::cout << "||UID: " << collection.LeaderboardScores[size - (cursor + offset)].GetUID() << "\n";
+				std::cout << "||Wins/Losses: " << collection.LeaderboardScores[size - (cursor + offset)].getKD()[0] << "/" << collection.LeaderboardScores[size - (cursor + offset)].getKD()[1] << '\n';
+				RenderColor(93);
+				std::cout << "||=======================================================||\n";
+				RenderColor();
+			}
+
+
+			prevCursor = cursor;
+
+			if (Selection == 0) {
+				std::cout << " [Locate by name]         Locate by UID";
+
+				if (displaymode == 0) {
+					std::cout << "          <MODE: ALL> ";
+				}
+				if (displaymode == 1) {
+					std::cout << "          <MODE: REMOTE> ";
+				}
+				if (displaymode == 2) {
+					std::cout << "          <MODE: LOCAL> ";
+				}
+
+				if (input == 'e') {
+					SearchLB(collection);
+					input = 'N';
+
+					prevCursor = -1;
 				}
 			}
-			else
-				std::cout << "\n";
-		}
-		std::cout << "||=======================================================||\n\n";
+			if (Selection == 1) {
+				std::cout << "  Locate by name         [Locate by UID]";
 
-		int pointer = (cursor + offset);
-		if (pointer < collection.LeaderboardScores.size() && cursor != NOTrender) {
-			std::cout << "||=======================================================||\n";
-			std::cout << "||Player: " << collection.LeaderboardScores[size - (cursor + offset)].GetUserNameT() << "\n";
-			std::cout << "||Score: " << collection.LeaderboardScores[size - (cursor + offset)].GetHighScore() << "\n";
-			std::cout << "||UID: " << collection.LeaderboardScores[size - (cursor + offset)].GetUID() << "\n";
-			std::cout << "||Wins/Losses: " << collection.LeaderboardScores[size - (cursor + offset)].getKD()[0] << "/" << collection.LeaderboardScores[size - (cursor + offset)].getKD()[1] << '\n';
-			std::cout << "||=======================================================||\n";
-		}
+				if (displaymode == 0) {
+					std::cout << "          <MODE: ALL> ";
+				}
+				if (displaymode == 1) {
+					std::cout << "          <MODE: REMOTE> ";
+				}
+				if (displaymode == 2) {
+					std::cout << "          <MODE: LOCAL> ";
+				}
 
-		if (Selection == 0) {
-			std::cout << " [Locate by name]         Locate by UID";
+				if (input == 'e') {
+					LocateUIDLB(collection);
+					input = 'N';
 
-			if (displaymode == 0) {
-				std::cout << "          <MODE: ALL> ";
-			}
-			if (displaymode == 1) {
-				std::cout << "          <MODE: REMOTE> ";
-			}
-			if (displaymode == 2) {
-				std::cout << "          <MODE: LOCAL> ";
+					prevCursor = -1;
+				}
 			}
 
-			if (input == 'e') {
-				SearchLB(collection);
-				input = 'N';
-			}
-		}
-		if (Selection == 1) {
-			std::cout << "  Locate by name         [Locate by UID]";
-
-			if (displaymode == 0) {
-				std::cout << "          <MODE: ALL> ";
-			}
-			if (displaymode == 1) {
-				std::cout << "          <MODE: REMOTE> ";
-			}
-			if (displaymode == 2) {
-				std::cout << "          <MODE: LOCAL> ";
-			}
-
-			if (input == 'e') {
-				LocateUIDLB(collection);
-				input = 'N';
-			}
 		}
 
-		
 		if (_kbhit()) {
 
 			input = _getch();
@@ -149,21 +166,24 @@ void RenderLeaderBoards(Leaderboards collection) {
 				if (cursor > 0)
 					cursor--;
 				else
-					if (offset > 0)
+					if (offset > 0) {
 						offset--;
+					}
 
 			if (input == 's' || input == 'S')
 				if (cursor < 8)
 					cursor++;
 				else
-					if (offset < 1)
-						offset++;
+					offset++;
 
 			if (input == 'f' || input == 'F')
 				if (displaymode < 2)
 					displaymode++;
 				else
 					displaymode = 0;
+
+
+			prevCursor = -1;
 		}
 	}
 }

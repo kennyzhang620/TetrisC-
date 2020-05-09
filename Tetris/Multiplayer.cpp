@@ -17,7 +17,6 @@ int maxHeight = 14 + 5;
 std::string path;
 int currKDS[4] = { 0,0,0,0 };
 int prevRand = 0;
-int alloc = 0;
 
 int Communicator = 0; // 0 Trans 1 Receive
 int GameStateM = 0;
@@ -421,7 +420,7 @@ void Receiver(TetrisObj* multiplayergame) {
 		std::cout << "============AWAITING RESPONSE FROM PLAYER 1...===========||\n";
 		std::cout << "Input the URL that Player 1 has given you.\n";
 		std::cout << "URL to connect to: ";
-		std::cin >> path;
+		std::getline(std::cin,path);
 		std::cout << "\n";
 		std::cout << "             Communicating... Please stand by.             \n";
 
@@ -441,7 +440,9 @@ void Receiver(TetrisObj* multiplayergame) {
 			Setup(multiplayergame);
 		}
 		else {
+			RenderColor(91);
 			std::cout << "        Connection timed out or does not exist.         \n";
+			RenderColor();
 			std::cout << "        Press any key to continue or E to exit.         \n";
 			input = _getch();
 		}
