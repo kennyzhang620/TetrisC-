@@ -16,13 +16,12 @@
 #include "PlayerStats.h"
 #include "DisplayHelper.h"
 #include "Leaderboards.h"
+#include "DIsplay.h"
 
 PlayerStats* CurrentChar = new PlayerStats;
 PlayerStats* LocalChar = new PlayerStats;
 TetrisObj game;
 
-int Score = 0;
-int HighScore = 0;
 int usingCheats = 0;
 
 int GameState = 0; // 0 running 1 ended.
@@ -36,16 +35,33 @@ int numBlocks = 6;
 int Rotation = 0, prevRot = 0; // 0 normal 1
 std::string userdatadir = getenv("appdata");
 Leaderboards* lbdata = new Leaderboards;
+int RenderMode = 0;
 
 char cmd[10]{};
+
+void DisplaySplash() {
+	std::cout << '\n';
+	std::cout << "||=======================================================||\n";
+	std::cout << "||                    __________         BY ZHANGCODES620||\n";
+	std::cout << "||                    |        |                         ||\n";
+	std::cout << "||                    |        |                         ||\n";
+	std::cout << "||           _________|________|________                 ||\n";
+	std::cout << "||           |        |        |        |                ||\n";
+	std::cout << "||           |        |        |        |                ||\n";
+	std::cout << "||           ----------------------------                ||\n";
+	std::cout << "||                   ";
+	RenderColor(94, 103);
+	std::cout << "TETRIS IN C++!";
+	RenderColor();
+	std::cout << "                      ||\n";
+	std::cout << "||=======================================================||\n";
+}
 
 void Startup(PlayerStats* newChar, int mode) {
 	FILE* detectFile = fopen((userdatadir + "/userdata.bin").c_str(), "r");
 	
 	if (detectFile != NULL && mode == 0) {
 		fread(newChar, sizeof(PlayerStats), 1, detectFile);
-
-		HighScore = newChar->GetHighScore();
 
 		FILE* readFile1 = fopen("leaderboards.dat", "r");
 
@@ -60,17 +76,8 @@ void Startup(PlayerStats* newChar, int mode) {
 	}
 	else {
 		system("CLS");
-		std::cout << '\n';
-		std::cout << "||=======================================================||\n";
-		std::cout << "||                    __________         BY ZHANGCODES620||\n";
-		std::cout << "||                    |        |                         ||\n";
-		std::cout << "||                    |        |                         ||\n";
-		std::cout << "||           _________|________|________                 ||\n";
-		std::cout << "||           |        |        |        |                ||\n";
-		std::cout << "||           |        |        |        |                ||\n";
-		std::cout << "||           ----------------------------                ||\n";
-		std::cout << "||                   TETRIS IN C++!                      ||\n";
-		std::cout << "||=======================================================||\n";
+		DisplaySplash();
+		
 		std::cout << "Enter your name (Max 10 Chars): ";
 		std::string username;
 		std::getline(std::cin, username);
@@ -103,20 +110,11 @@ int MainMenu() {
 	while (input != 'e' && input != 'E') {
 		if (prevSelection != Selection) {
 			system("CLS");
-			std::cout << '\n';
-			std::cout << "||=======================================================||\n";
-			std::cout << "||                    __________         BY ZHANGCODES620||\n";
-			std::cout << "||                    |        |                         ||\n";
-			std::cout << "||                    |        |                         ||\n";
-			std::cout << "||           _________|________|________                 ||\n";
-			std::cout << "||           |        |        |        |                ||\n";
-			std::cout << "||           |        |        |        |                ||\n";
-			std::cout << "||           ----------------------------                ||\n";
-			std::cout << "||                   TETRIS IN C++!                      ||\n";
-			std::cout << "||=======================================================||\n";
-			std::cout << "\x1b[" << 94 << "m";
-			std::cout << "||" << CurrentChar->GetUserNameT() << ": " << HighScore << "\n";
-			std::cout << "\x1b[0m";
+			DisplaySplash();
+
+			RenderColor(94);
+			std::cout << "||" << CurrentChar->GetUserNameT() << ": " << CurrentChar->GetHighScore() << "\n";
+			RenderColor();
 			std::cout << "||=======================================================||\n";
 
 			if (Selection == 0) {
@@ -138,12 +136,12 @@ int MainMenu() {
 			}
 			prevSelection = Selection;
 
-			std::cout << "\x1b[" << 94 << "m";
+			RenderColor(94);
 			std::cout << "Controls: WASD\n(W to rotate Block, A and D to move left and right, and S to speed up descent of Block.\n\n";
 			std::cout << "    [W] [E]\n";
 			std::cout << "[A] [S] [D] [F]\n\n";
-			std::cout << "For menus, E to go to option, F for filters (Leaderboards only).\n";
-			std::cout << "\x1b[0m";
+			std::cout << "For menus, E to go to option, F for filters (Leaderboards only), and Escape (ESC) to leave the current menu.\n";
+			RenderColor();
 		}
 
 		if (_kbhit()) {
@@ -155,6 +153,21 @@ int MainMenu() {
 			if (input == 'd' || input == 'D')
 				if (Selection < 3)
 					Selection++;
+
+			if (input == 'p' || input == 'P') {
+				if (RenderMode == 0) {
+					RenderColor(0, 0, 1);
+					std::cout << "\nCOLOUR RENDERING ENABLED.\n";
+					RenderMode = 1;
+				}
+				else {
+					RenderColor(0, 0, 0);
+					std::cout << "\nCOLOUR RENDERING DISABLED.\n";
+					RenderMode = 0;
+				}
+
+				prevSelection = 10;
+			}
 
 			if (input == 'c') {
 				std::cout << "Master Recognition Mode Enabled.\n";
@@ -206,7 +219,7 @@ int MainMenu() {
 	return Selection;
 }
 
-int GameOver() {
+int GameOver(int Score) {
 	PlaySound(NULL, NULL, 0);
 	int Selection = 0;
 	char input = 'N';
@@ -221,9 +234,9 @@ int GameOver() {
 		std::cout << "||           |        | ====== |        |                ||\n";
 		std::cout << "||           |        |-      -|        |                ||\n";
 		std::cout << "||           ----------------------------                ||\n";
-		std::cout << "\x1b[" << 91 << "m";
+		RenderColor(91);
 		std::cout << "||                     GAME OVER!                        ||\n";
-		std::cout << "\x1b[0m";
+		RenderColor();
 		std::cout << "||=======================================================||\n";
 
 		if (Selection == 0)
@@ -254,6 +267,11 @@ void GameStarter(PlayerStats* newChar, int mode) {
 	game.HighScore = newChar->GetHighScore();
 	game.Run();
 
+	if (newChar->GetHighScore() < game.HighScore) {
+		newChar->SetHighScore(game.HighScore);
+		lbdata->InsertLeaderboardSrted(*newChar);
+	}
+
 	if (mode == 0) {
 		FILE* writeFile = fopen((userdatadir + "/userdata.bin").c_str(), "w");
 
@@ -263,17 +281,9 @@ void GameStarter(PlayerStats* newChar, int mode) {
 		}
 	}
 
-
-	if (newChar->GetHighScore() < game.HighScore) {
-		newChar->SetHighScore(game.HighScore);
-		lbdata->InsertLeaderboardSrted(*newChar);
-	}
-
-	Score = game.Score;
-
 	lbdata->SavetoBinary("leaderboards.dat");
 
-	if (GameOver() == 0) {
+	if (GameOver(game.Score) == 0) {
 		GameStarter(newChar, mode);
 	}
 
@@ -288,29 +298,28 @@ void LocalMPOptions() {
 	while (input != 'e' && input != 'E' && input != 27) {
 		if (prevSelection != Selection) {
 			system("CLS");
-			std::cout << '\n';
-			std::cout << "||=======================================================||\n";
-			std::cout << "||                    __________         BY ZHANGCODES620||\n";
-			std::cout << "||                    |        |                         ||\n";
-			std::cout << "||                    |        |                         ||\n";
-			std::cout << "||           _________|________|________                 ||\n";
-			std::cout << "||           |        |        |        |                ||\n";
-			std::cout << "||           |        |        |        |                ||\n";
-			std::cout << "||           ----------------------------                ||\n";
-			std::cout << "||                   TETRIS IN C++!                      ||\n";
-			std::cout << "||=======================================================||\n";
-			std::cout << "\x1b[" << 94 << "m";
-			std::cout << "||" << CurrentChar->GetUserNameT() << ": " << HighScore << "\n";
-			std::cout << "\x1b[0m";
+			DisplaySplash();
+
+			RenderColor(94);
+			std::cout << ">>" << CurrentChar->GetUserNameT() << ": " << CurrentChar->GetHighScore() << "\n";
+			RenderColor();
 			std::cout << "||=======================================================||\n";
 
 			if (Selection == 0) {
 				std::cout << "         <NEW PLAYER>           CONTINUE AS ";
-				std::cout << "\x1b[" << 94 << "m" << CurrentChar->GetUserNameT() << "\x1b[0m" << "\n";
+				RenderColor(94);
+				std::cout << CurrentChar->GetUserNameT();
+				std::cout << "\n";
+				RenderColor();
+
 			}
 			else if (Selection == 1) {
 				std::cout << "          NEW PLAYER           <CONTINUE AS ";
-				std::cout << "\x1b[" << 94 << "m" << CurrentChar->GetUserNameT() << "\x1b[0m" << ">\n";
+				RenderColor(94);
+				std::cout << CurrentChar->GetUserNameT(); 
+				std::cout << ">\n";
+				RenderColor();
+
 			}
 			prevSelection = Selection;
 		}

@@ -169,9 +169,11 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLLs|Win32'">
     <ClCompile>
       <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DIsplay.cpp" />
     <ClCompile Include="Tree.cpp" />
     <ClCompile Include="Blocks.cpp" />
     <ClCompile Include="DisplayHelper.cpp" />
@@ -181,6 +183,7 @@
     <ClCompile Include="Tetris.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DIsplay.h" />
     <ClInclude Include="Tree.h" />
     <ClInclude Include="Blocks.h" />
     <ClInclude Include="DisplayHelper.h" />

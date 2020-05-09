@@ -6,6 +6,7 @@
 #include <thread>
 #include "DisplayHelper.h"
 #include "Leaderboards.h"
+#include "DIsplay.h"
 
 PlayerStats* currentPlayer = NULL;
 PlayerStats* opponentPlayer = NULL;
@@ -25,14 +26,25 @@ void printSplash() {
 	system("CLS");
 	std::cout << '\n';
 	std::cout << "||=======================================================||\n";
-	std::cout << "||                    __________     MULTIPLAYER BATTLES!||\n";
+	std::cout << "||                    __________     ";
+	RenderColor(97, 104);
+	std::cout << "MULTIPLAY"; 
+	RenderColor(97, 101);
+	std::cout << "ER BATTLES!";
+	RenderColor();
+	std::cout << "||\n";
+
 	std::cout << "||                    |        |                         ||\n";
 	std::cout << "||                    |        |                         ||\n";
 	std::cout << "||           _________|________|________                 ||\n";
 	std::cout << "||           |        |        |        |                ||\n";
 	std::cout << "||           |        |        |        |                ||\n";
 	std::cout << "||           ----------------------------                ||\n";
-	std::cout << "||                   TETRIS IN C++!                      ||\n";
+	std::cout << "||                   ";
+	RenderColor(94, 103);
+	std::cout << "TETRIS IN C++!";
+	RenderColor();
+	std::cout << "                      ||\n";
 	std::cout << "||=======================================================||\n\n";
 	
 }
@@ -41,7 +53,7 @@ void printSplashWin() {
 	system("CLS");
 	int timeVal = 99999999;
 	std::cout << '\n';
-	std::cout << "\x1b[" << 97 << "m" << "\x1b[" << 104 << "m";
+	RenderColor(97, 104);
 	std::cout << "||=======================================================||\n";
 	for (int i = 0; i < timeVal; i++) {}
 	std::cout << "||                    __________     MULTIPLAYER BATTLES!||\n";
@@ -60,14 +72,14 @@ void printSplashWin() {
 	for (int i = 0; i < timeVal; i++) {}
 	std::cout << "||                     YOU WON!                          ||\n";
 	for (int i = 0; i < timeVal; i++) {}
-	std::cout << "\x1b[0m";
-	std::cout << "\x1b[" << 91 << "m";
+	RenderColor();
+	RenderColor(91);
 	std::cout << "||        Congratulations " << currentPlayer->GetUserNameT() << "!\n";
-	std::cout << "\x1b[" << 97 << "m" << "\x1b[" << 104 << "m";
+	RenderColor(97, 104);
 	for (int i = 0; i < timeVal; i++) {}
 	std::cout << "||=======================================================||\n\n";
 	for (int i = 0; i < timeVal*10; i++) {}
-	std::cout << "\x1b[0m";
+	RenderColor();
 
 }
 
@@ -76,7 +88,7 @@ void printSplashLoss() {
 	int timeVal = 99999999;
 	std::cout << '\n';
 	for (int i = 0; i < timeVal; i++) {}
-	std::cout << "\x1b[" << 97 << "m" << "\x1b[" << 101 << "m";
+	RenderColor(97, 101);
 	std::cout << "||=======================================================||\n";
 	for (int i = 0; i < timeVal; i++) {}
 	std::cout << "||                    __________     MULTIPLAYER BATTLES!||\n";
@@ -95,14 +107,14 @@ void printSplashLoss() {
 	for (int i = 0; i < timeVal; i++) {}
 	std::cout << "||                     YOU LOST!                         ||\n";
 	for (int i = 0; i < timeVal; i++) {}
-	std::cout << "\x1b[0m";
-	std::cout << "\x1b[" << 94 << "m";
+	RenderColor();
+	RenderColor(94);
 	std::cout << "||        Congratulations " << opponentPlayer->GetUserNameT() << "!\n";
-	std::cout << "\x1b[" << 97 << "m" << "\x1b[" << 101 << "m";
+	RenderColor(97, 101);
 	for (int i = 0; i < timeVal; i++) {}
 	std::cout << "||=======================================================||\n\n";
 	for (int i = 0; i < timeVal*10; i++) {}
-	std::cout << "\x1b[0m";
+	RenderColor();
 
 }
 
@@ -185,11 +197,11 @@ void BattleAnimation() {
 	PlaySound(TEXT("alt1.wav"), NULL, SND_LOOP | SND_ASYNC);
 	system("CLS");
 	std::cout << '\n';
-	std::cout << "\x1b[" << 97 << "m" << "\x1b[" << 104 << "m";
+	RenderColor(97, 104);
 	std::cout << "||=======================================================||\n";
-	std::cout << "\x1b[0m";
+	RenderColor();
 	for (int i = 0; i < timeVal; i++) {}
-	std::cout << "\x1b[" << 94 << "m";
+	RenderColor(94);
 	std::cout << "||Player: " << currentPlayer->GetUserNameT() <<"\n";
 	for (int i = 0; i < timeVal; i++) {}
 	std::cout << "||Score: " << currentPlayer->GetHighScore() << "\n";
@@ -198,13 +210,13 @@ void BattleAnimation() {
 	for (int i = 0; i < timeVal; i++) {}
 	std::cout << "||Wins/Losses: " << currentPlayer->getKD()[0] << "/" << currentPlayer->getKD()[1] << '\n';
 	for (int i = 0; i < timeVal; i++) {}
-	std::cout << "\x1b[0m";
-	std::cout << "\x1b[" << 97 << "m" << "\x1b[" << 104 << "m";
+	RenderColor();
+	RenderColor(97, 104);
 	std::cout << "||=============<V/S>=VERSUS=";
-	std::cout << "\x1b[" << 97 << "m" << "\x1b[" << 101 << "m";
+	RenderColor(97, 101);
 	std::cout << "PLAYER=<V/S>=================||\n";
-	std::cout << "\x1b[0m";
-	std::cout << "\x1b[" << 91 << "m";
+	RenderColor();
+	RenderColor(91);
 	for (int i = 0; i < timeVal; i++) {}
 	std::cout << "||Player: " << opponentPlayer->GetUserNameT() << "\n";
 	for (int i = 0; i < timeVal; i++) {}
@@ -214,10 +226,10 @@ void BattleAnimation() {
 	for (int i = 0; i < timeVal; i++) {}
 	std::cout << "||Wins/Losses: " << opponentPlayer->getKD()[0] << "/" << opponentPlayer->getKD()[1] << '\n';
 	for (int i = 0; i < timeVal; i++) {}
-	std::cout << "\x1b[0m";
-	std::cout << "\x1b[" << 97 << "m" << "\x1b[" << 104 << "m";
+	RenderColor();
+	RenderColor(97, 104);
 	std::cout << "||=======================================================||\n";
-	std::cout << "\x1b[0m";
+	RenderColor();
 
 	for (int i = 0; i < timeVal*10; i++) {}
 
@@ -243,9 +255,9 @@ void BattleAnimation() {
 		int a = _getch();
 	}
 	else if (GameStateM == -1) {
-		std::cout << "\x1b[" << 91 << "m";
+		RenderColor(91);
 		std::cout << "\nCommunication error. Press any key to continue\n";
-		std::cout << "\x1b[0m";
+		RenderColor();
 		int a = _getch();
 	}
 
@@ -281,9 +293,9 @@ void BattleWrapper() {
 	}
 	else {
 		GameStateM = 1;
-		std::cout << "\x1b[" << 91 << "m";
+		RenderColor(91);
 		std::cout << "Connection timed out. Press any key to continue\n";
-		std::cout << "\x1b[0m";
+		RenderColor();
 		int a = _getch();
 	}
 
@@ -307,14 +319,14 @@ void Setup() {
 		std::string str(ws.begin(), ws.end());
 
 		if (Communicator == 0) {
-			std::cout << "\x1b[" << 91 << "m";
+			RenderColor(91);
 			std::cout << "====================PLAYER 2 FOUND!======================||\n";
-			std::cout << "\x1b[0m";
+			RenderColor();
 		}
 		else {
-			std::cout << "\x1b[" << 94 << "m";
+			RenderColor(94);
 			std::cout << "====================PLAYER 1 FOUND!======================||\n";
-			std::cout << "\x1b[0m";
+			RenderColor();
 		}
 		std::cout << "Name: " << opponentPlayer->GetUserNameT() << '\n';
 		std::cout << "HighScore: " << opponentPlayer->GetHighScore() << '\n';

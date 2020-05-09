@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <conio.h>
 #include "Blocks.h"
+#include "DIsplay.h"
 
 class TetrisObj {
 public:
@@ -17,8 +18,8 @@ public:
 	int Score = 0;
 	int HighScore = 0;
 	int TotalTimeElapsed = 0;
-	int FixedTime = 200;
-	int TimeFactor = 200;
+	int FixedTime = 350;
+	int TimeFactor = 350;
 
 	int GameState = 0; // 0 running 1 ended.
 
@@ -133,39 +134,45 @@ public:
 				prevSignal = -1;
 		}
 		if (SignalStrength >= 0 && SignalStrength < 20) {
-			std::cout << "\x1b[" << 91 << "m" << "[     ]\n";
-			std::cout << "\x1b[0m";
+			RenderColor(91);
+			std::cout << "[     ]\n";
+			RenderColor();
 			prevSignal = SignalStrength;
 		}
 		else if (SignalStrength >= 20 && SignalStrength < 40) {
-			std::cout << "\x1b[" << 91 << "m" << "[#    ]\n";
-			std::cout << "\x1b[0m";
+			RenderColor(91);
+			std::cout << "[#    ]\n";
+			RenderColor();
 			prevSignal = SignalStrength;
 		}
 		else if (SignalStrength >= 40 && SignalStrength < 60) {
-			std::cout << "\x1b[" << 91 << "m" << "[##   ]\n";
-			std::cout << "\x1b[0m";
+			RenderColor(91);
+			std::cout << "[##   ]\n";
+			RenderColor();
 			prevSignal = SignalStrength;
 		}
 		else if (SignalStrength >= 60 && SignalStrength < 80) {
-			std::cout << "\x1b[" << 93 << "m" << "[###  ]\n";
-			std::cout << "\x1b[0m";
+			RenderColor(93);
+			std::cout << "[###  ]\n";
+			RenderColor();
 			prevSignal = SignalStrength;
 		}
 		else if (SignalStrength >= 80 && SignalStrength < 100) {
-			std::cout << "\x1b[" << 92 << "m" << "[#### ]\n";
-			std::cout << "\x1b[0m";
+			RenderColor(92);
+			std::cout << "[#### ]\n";
+			RenderColor();
 			prevSignal = SignalStrength;
 		}
 		else if (SignalStrength >= 100) {
-			std::cout << "\x1b[" << 92 << "m" << "[#####]\n";
-			std::cout << "\x1b[0m";
+			RenderColor(92);
+			std::cout << "[#####]\n";
+			RenderColor();
 			prevSignal = SignalStrength;
 		}
 
-		std::cout << "\x1b[" << 93 << "m" << "\x1b[" << 102 << "m";
+		RenderColor(93, 102);
 		std::cout << "\n=======================TETRIS C++!========================"  << '\n';
-		std::cout << "\x1b[0m";
+		RenderColor();
 
 		for (int y = 0 + 5; y < 20; y++) {
 			int blocksXRow = 0;
@@ -174,12 +181,14 @@ public:
 			for (int x = 0; x < 20; x++) {
 				if (x < 10 && y < 10 + 10) {
 					if (gameMatrix[x][y] == 0) {
-						std::cout << "\x1b[" << 30 << "m" << "\x1b[" << 40 << "m" << "[ ]";
-						std::cout << "\x1b[0m";
+						RenderColor(30, 40);
+						std::cout << "[ ]";
+						RenderColor();
 					}// Represent a empty block.
 					else if (gameMatrix[x][y] == 1) { // Render a X at location. Set blocksXRows++ for that particular row and if >= 10 append to score.
-						std::cout << "\x1b[" << fg << "m" << "\x1b[" << bg << "m" << "[X]";
-						std::cout << "\x1b[0m";
+						RenderColor(fg, bg);
+						std::cout << "[X]";
+						RenderColor();
 						blocksXRow++;
 
 						if (blocksXRow >= 10 && (currY >= 9 + 10 || currY == 1)) {
@@ -204,8 +213,9 @@ public:
 
 					}
 					else if (gameMatrix[x][y] == 2) {
-						std::cout << "\x1b[" << 97 << "m" << "\x1b[" << 107 << "m" << "[O]";
-						std::cout << "\x1b[0m";
+						RenderColor(37, 107);
+						std::cout << "[O]";
+						RenderColor();
 					}
 				}
 
@@ -222,9 +232,9 @@ public:
 			}
 			std::cout << "\n";
 		}
-		std::cout << "\x1b[" << 93 << "m" << "\x1b[" << 102 << "m";
+		RenderColor(93, 102);
 		std::cout << "==========================================================";
-		std::cout << "\x1b[0m";
+		RenderColor();
 
 		return 0;
 	}
@@ -284,7 +294,6 @@ public:
 				if (randVal == 5)
 					currentBlock = TStar;
 
-				TotalTimeElapsed = -1;
 				RandomizeColor(&fg, &bg);
 
 			}
@@ -394,8 +403,14 @@ public:
 		Score = 0;
 		HighScore = 0;
 		TotalTimeElapsed = 0;
-		FixedTime = 200;
-		TimeFactor = 200;
+		if (GetColorMode()) {
+			FixedTime = 350;
+			TimeFactor = 350;
+		}
+		else {
+			FixedTime = 350*2;
+			TimeFactor = 350*2;
+		}
 
 		GameState = 0; // 0 running 1 ended.
 
