@@ -14,10 +14,10 @@ Leaderboards* currLeaderboard = NULL;
 
 int prevLineRm = 0;
 int maxHeight = 14 + 5;
-TetrisObj multiplayergame;
 std::string path;
 int currKDS[4] = { 0,0,0,0 };
 int prevRand = 0;
+int alloc = 0;
 
 int Communicator = 0; // 0 Trans 1 Receive
 int GameStateM = 0;
@@ -118,15 +118,15 @@ void printSplashLoss() {
 
 }
 
-void AddLayer(int prevLayer, int Layer) {
+void AddLayer(TetrisObj* multiplayergame, int prevLayer, int Layer) {
 	for (int y = prevLayer; y >= Layer; y--) {
 		for (int x = 0; x < 20; x++) {
-			multiplayergame.gameMatrix[x][y] = 2;
+			multiplayergame->gameMatrix[x][y] = 2;
 		}
 	}
 }
 
-void Update() {
+void Update(TetrisObj* multiplayergame) {
 	int TimeOut = 0;
 	while (GameStateM == 0 && TimeOut < 3000)  {
 	//	for (int i = 0; i <= Time * 2; i++) { // 8 with full output
@@ -158,11 +158,13 @@ void Update() {
 				GameStateM = -1;
 			}
 
+			if (progressFile != NULL)
+				fclose(progressFile);
 
-			fclose(progressFile);
-			fclose(progressFile2);
+			if (progressFile2 != NULL)
+				fclose(progressFile2);
 
-			currentPlayer->LinesRm = multiplayergame.Score;
+			currentPlayer->LinesRm = multiplayergame->Score;
 			currentPlayer->Connector = rand();
 
 			if (opponentPlayer->Connector != prevRand) {
@@ -173,7 +175,7 @@ void Update() {
 				TimeOut++;
 			}
 
-			multiplayergame.SignalStrength = 100 - TimeOut;
+			multiplayergame->SignalStrength = 100 - TimeOut;
 
 			if (opponentPlayer->getKD()[1] > currKDS[3]) {
 				GameStateM = 1;
@@ -181,7 +183,7 @@ void Update() {
 			}
 
 			if (opponentPlayer->LinesRm > prevLineRm) {
-				AddLayer(maxHeight - prevLineRm, maxHeight - opponentPlayer->LinesRm);
+				AddLayer(multiplayergame, maxHeight - prevLineRm, maxHeight - opponentPlayer->LinesRm);
 				prevLineRm = opponentPlayer->LinesRm;
 			}
 		//}
@@ -189,10 +191,10 @@ void Update() {
 	if (TimeOut >= 3000) {
 		GameStateM = -1;
 	}
-	multiplayergame.Stop();  // Stops the game
+	multiplayergame->Stop();  // Stops the game
 }
 
-void BattleAnimation() {
+void BattleAnimation(TetrisObj* multiplayergame) {
 	int timeVal = 99999999;
 	PlaySound(TEXT("alt1.wav"), NULL, SND_LOOP | SND_ASYNC);
 	system("CLS");
@@ -236,7 +238,7 @@ void BattleAnimation() {
 	if (GameStateM != -1) {
 		currentPlayer->Height = 14;
 		system("CLS");
-		multiplayergame.Run();
+		multiplayergame->Run();
 	}
 	
 	if (GameStateM == 0) {
@@ -274,8 +276,8 @@ void BattleAnimation() {
 	currLeaderboard->SavetoBinary("leaderboards.dat");
 
 }
-void BattleWrapper() {
-	std::thread com(Update);
+void BattleWrapper(TetrisObj* multiplayergame) {
+	std::thread com(Update, multiplayergame);
 	std::cout << "Communicating.. Please stand by.\n";
 	currentPlayer->Height = 0;
 
@@ -289,7 +291,7 @@ void BattleWrapper() {
 	}
 	
 	if (Time < 1000000000) {
-		BattleAnimation();
+		BattleAnimation(multiplayergame);
 	}
 	else {
 		GameStateM = 1;
@@ -302,7 +304,7 @@ void BattleWrapper() {
 	com.join();
 }
 
-void Setup() {
+void Setup(TetrisObj* multiplayergame) {
 	char input = 'N';
 	int Selection = 0;
 	currKDS[0] = currentPlayer->getKD()[0];
@@ -356,7 +358,7 @@ void Setup() {
 	}
 
 	if (Selection == 0) {
-		BattleWrapper();
+		BattleWrapper(multiplayergame);
 		input = 'e';
 	}
 	else {
@@ -365,7 +367,7 @@ void Setup() {
 	
 }
 
-void Transmitter() {
+void Transmitter(TetrisObj* multiplayergame) {
 	char input = 'N';
 	FILE* detectFile = fopen("player1.bin", "w");
 	if (detectFile != NULL) {
@@ -397,7 +399,7 @@ void Transmitter() {
 			input = 'e';
 			fread(opponentPlayer, sizeof(PlayerStats), 1, detectFile2);
 			fclose(detectFile2);
-			Setup();
+			Setup(multiplayergame);
 		}
 		
 		if (_kbhit()) {
@@ -406,7 +408,7 @@ void Transmitter() {
 	}
 }
 
-void Receiver() {
+void Receiver(TetrisObj* multiplayergame) {
 	char input = 'N';
 
 	while (input != 'e') {
@@ -436,7 +438,7 @@ void Receiver() {
 				fclose(detectFile);
 			}
 
-			Setup();
+			Setup(multiplayergame);
 		}
 		else {
 			std::cout << "        Connection timed out or does not exist.         \n";
@@ -446,19 +448,21 @@ void Receiver() {
 	}
 }
 
-void MultiplayerConnect(PlayerStats* currentChar, Leaderboards* currentLeaderboard) {
+void MultiplayerConnect(PlayerStats* currentChar, Leaderboards* currentLeaderboard, TetrisObj* multiplayergame) {
 	currentPlayer = currentChar;
 	currLeaderboard = currentLeaderboard;
 	currentPlayer->LinesRm = 0;
 	currentPlayer->Height = 14;
+	
+	multiplayergame->Reset();
 
-	multiplayergame.Reset();
-	// WARNING: Memory leak!
 	if (opponentPlayer != NULL) {
 		delete opponentPlayer;
 	}
+
 	opponentPlayer = new PlayerStats;
 	
+
 	remove("player1.bin");
 	remove("player2.bin");
 	prevLineRm = 0;
@@ -513,15 +517,15 @@ void MultiplayerConnect(PlayerStats* currentChar, Leaderboards* currentLeaderboa
 
 	if (Selection == 0) {
 		Communicator = 0;
-		Transmitter();
+		Transmitter(multiplayergame);
 		PlaySound(NULL, NULL, 0);
-		MultiplayerConnect(currentChar, currentLeaderboard);
+		MultiplayerConnect(currentChar, currentLeaderboard, multiplayergame);
 	}
 	if (Selection == 1) {
 		Communicator = 1;
-		Receiver();
+		Receiver(multiplayergame);
 		PlaySound(NULL, NULL, 0);
-		MultiplayerConnect(currentChar, currentLeaderboard);
+		MultiplayerConnect(currentChar, currentLeaderboard, multiplayergame);
 	}
 
 	

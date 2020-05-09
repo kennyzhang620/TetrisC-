@@ -14,7 +14,6 @@
 #include "Blocks.h"
 #include "Multiplayer.h"
 #include "PlayerStats.h"
-#include "DisplayHelper.h"
 #include "Leaderboards.h"
 #include "DIsplay.h"
 
@@ -367,7 +366,7 @@ int main()
 		main();
 	}
 	else if (option == 2) {
-		MultiplayerConnect(CurrentChar,lbdata);
+		MultiplayerConnect(CurrentChar,lbdata, &game);
 		main();
 	}
 	else if (option == 3) {
