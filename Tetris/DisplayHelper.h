@@ -403,13 +403,14 @@ public:
 		Score = 0;
 		HighScore = 0;
 		TotalTimeElapsed = 0;
+
 		if (GetColorMode()) {
 			FixedTime = 350;
 			TimeFactor = 350;
 		}
 		else {
-			FixedTime = 350*2;
-			TimeFactor = 350*2;
+			FixedTime = 350*(2.70);
+			TimeFactor = 350*(2.70);
 		}
 
 		GameState = 0; // 0 running 1 ended.
